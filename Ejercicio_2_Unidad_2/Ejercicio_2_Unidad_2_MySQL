@@ -1,0 +1,101 @@
+# 1. Despliegue la aplicación completamente desde la línea de comandos:
+
+### Se crea los volumenes para la actividad.
+
+docker volume create mysql-volume
+
+### Se realiza el pull de la imagen base, con la última actualización.
+
+docker pull mysql
+
+### Se realiza la carga de la imagen con la etiqueta personalizada al Docker Hub de mi cuenta jbaricot.
+
+docker tag 8251f0669c6e jbaricot/mysql:v1
+docker tag 8251f0669c6e jbaricot/mysql:despliegue_cli
+
+### Se realiza la carga de la imagen con la etiqueta personalizada al Docker Hub de mi cuenta jbaricot.
+
+docker push jbaricot/mysql:v1
+docker push jbaricot/mysql:despliegue_cli
+
+### Se crea el contenedor de MySQL por medio de comandos CLI.
+
+docker run --name mysql_container_1 -d -v mysql-volume:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=asd123 -e MYSQL_DATABASE=my_db -e MYSQL_USER=jbaricot -e MYSQL_PASSWORD=asdf1234 jbaricot/mysql:despliegue_cli
+
+# 2. Despliegue la aplicación desde archivos DockerFile:
+
+### Se crea el DockerFile con la imagen oficial de MySQL etiquetada como V1.
+FROM jbaricot/mysql:v1
+
+
+ENV MYSQL_ROOT_PASSWORD asd123
+ENV MYSQL_DATABASE my_db
+ENV MYSQL_USER jbaricot
+ENV MYSQL_PASSWORD asdf1234
+
+### Se compila la imagen con los parametros de nuestro Dockerfile.
+
+docker build -t jbaricot/mysql:despliegue_dockerfile ./
+
+### Se realiza la carga de la imagen con la etiqueta personalizada al Docker Hub de mi cuenta jbaricot.
+
+docker push jbaricot/mysql:despliegue_dockerfile
+
+### Se crea el contenedor de MySQL con la imagen creada desde el Dockerfile.
+
+docker run -d --name mysql_container_2 -v mysql-volume:/var/lib/mysql jbaricot/mysql:despliegue_dockerfile
+
+# 3. Despliegue la aplicación desde Docker Compose:
+
+### Se realiza la carga de la imagen con la etiqueta personalizada al Docker Hub de mi cuenta jbaricot.
+
+docker tag 8251f0669c6e jbaricot/mysql:despliegue_dockercompose
+
+### Se realiza la carga de la imagen con la etiqueta personalizada al Docker Hub de mi cuenta jbaricot.
+
+docker push jbaricot/mysql:despliegue_dockercompose
+
+
+### Se crea el Docker-Compose.
+
+version: "3.8"
+
+services:
+  mysql:
+    image: jbaricot/mysql:despliegue_dockercompose
+    container_name: "mysql_container_3"
+    environment:
+      MYSQL_ROOT_PASSWORD: asd123
+      MYSQL_DATABASE : my_db
+      MYSQL_USER: jbaricot
+      MYSQL_PASSWORD: asdf1234
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
+  phpmyadmin: 
+    image: jbaricot/phpmyadmin:despliegue_dockercompose
+    container_name: "phpmyadmin_container_3"
+    ports:
+      - "8083:80"
+    environment:
+      PMA_HOST: mysql_container_3
+      MYSQL_ROOT_PASSWORD: asd123
+      PMA_USER: jbaricot
+      PMA_PASSWORD: asdf1234
+    depends_on:
+      - mysql
+    volumes:
+      - phpmyadmin-volume:/etc/phpmyadmin
+      
+volumes:
+  mysql-volume:
+    external: true
+  phpmyadmin-volume:
+    external: true
+
+  
+### Se ejecuta el Docker compose para la creación de los contenedores.
+
+docker-compose.yml" up -d --build
+
+

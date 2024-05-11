@@ -1,0 +1,7 @@
+# Usa la imagen oficial de MySQL etiquetada como V1
+FROM jbaricot/mysql:v1
+
+ENV MYSQL_ROOT_PASSWORD asd123
+ENV MYSQL_DATABASE my_db
+ENV MYSQL_USER jbaricot
+ENV MYSQL_PASSWORD asdf1234

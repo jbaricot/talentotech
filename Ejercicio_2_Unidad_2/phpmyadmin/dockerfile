@@ -1,0 +1,9 @@
+FROM  jbaricot/phpmyadmin:v1
+
+# Variables de entorno
+ENV MYSQL_ROOT_PASSWORD=asd123
+ENV PMA_HOST=mysql_container_2
+ENV PMA_USER=jbaricot
+ENV PMA_PASSWORD=asdf1234
+
+EXPOSE 80
