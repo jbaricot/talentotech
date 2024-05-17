@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-phpmyadmin  # Nombre del PersistentVolumeClaim
+spec:
+  accessModes:
+    - ReadWriteMany # Modo de acceso, permite que múltiples nodos puedan leer y escribir en el volumen
+  resources:
+    requests:
+      storage: 5Gi # Solicitud de almacenamiento de 5 GiB para este PersistentVolumeClaim
